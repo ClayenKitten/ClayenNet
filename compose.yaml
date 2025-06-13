@@ -1,0 +1,70 @@
+services:
+  # bot
+  telegram:
+    build: ./telegram
+    restart: unless-stopped
+    env_file: ./.env
+    profiles: [control-node]
+
+  postgres:
+    image: postgres:17
+    expose: [5432]
+    ports: [127.0.0.1:5432:5432]
+    shm_size: 128mb
+    restart: unless-stopped
+    volumes: [postgres:/var/lib/postgresql/data]
+    env_file: ../.env
+    healthcheck:
+      test: pg_isready --dbname="$$POSTGRES_DB" --username="$$POSTGRES_USER"
+      interval: 5s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+      start_interval: 500ms
+    profiles: [control-node]
+
+  # domestic
+  domestic-wireguard:
+    build: ./domestic
+    restart: unless-stopped
+    expose: [51280]
+    ports: [51280:51280]
+    cap_add: [NET_ADMIN]
+    sysctls: [net.ipv4.ip_forward=1, net.ipv4.conf.all.src_valid_mark=1]
+    env_file: .env
+    volumes: [./wg-domestic.conf:/etc/wireguard/wg-domestic.conf]
+    profiles: [domestic-node]
+
+  domestic-wstunnel:
+    image: ghcr.io/erebe/wstunnel:v10.4.2
+    restart: unless-stopped
+    expose: [443]
+    env_file: .env
+    command: >
+      ./wstunnel client
+        --local-to-remote='udp://0.0.0.0:51820:localhost:51820?timeout_sec=0'
+        --http-upgrade-path-prefix="$WSTUNNEL_PASSWORD"
+        wss://$FOREIGN_DOMAIN:443
+    profiles: [domestic-node]
+
+  # foreign
+  foreign-wireguard:
+    build: ./foreign
+    restart: unless-stopped
+    cap_add: [NET_ADMIN]
+    sysctls: [net.ipv4.ip_forward=1, net.ipv4.conf.all.src_valid_mark=1]
+    env_file: .env
+    volumes: [./wg-foreign.conf:/etc/wireguard/wg-foreign.conf]
+    profiles: [foreign-node]
+
+  foreign-wstunnel:
+    image: ghcr.io/erebe/wstunnel:v10.4.2
+    restart: unless-stopped
+    expose: [443]
+    ports: [443:443]
+    env_file: .env
+    command: ./wstunnel server --restrict-http-upgrade-path-prefix="$WSTUNNEL_PASSWORD" wss://0.0.0.0:443
+    profiles: [foreign-node]
+
+volumes:
+  postgres:

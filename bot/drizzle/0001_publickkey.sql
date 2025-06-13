@@ -1,0 +1,1 @@
+ALTER TABLE "configs" ADD COLUMN "public_key" text NOT NULL;
