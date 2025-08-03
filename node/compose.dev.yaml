@@ -1,0 +1,13 @@
+services:
+  dev:
+    build: .
+    command: ["fastapi", "dev", "/app/src/main.py", "--host", "0.0.0.0", "--port", "3000"]
+    ports:
+      - 3000:9501
+      - 51280:51280
+    environment:
+      API_PASSWORD: 1234
+    cap_add: [NET_ADMIN]
+    sysctls: [net.ipv4.ip_forward=1, net.ipv4.conf.all.src_valid_mark=1]
+    volumes:
+      - .:/app:ro
