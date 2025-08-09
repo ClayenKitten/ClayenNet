@@ -61,6 +61,16 @@ def apply_iptables(enable: bool = True):
     )
     # Enable masquerading (source NAT) to allow communication with public networks
     subprocess.run(
-        ["iptables", "-t", "nat", flag, "POSTROUTING", "-o" "eth0", "-j", "MASQUERADE"],
+        [
+            "iptables",
+            "-t",
+            "nat",
+            flag,
+            "POSTROUTING",
+            "-o",
+            "eth0",
+            "-j",
+            "MASQUERADE",
+        ],
         check=enable,
     )
