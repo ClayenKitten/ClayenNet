@@ -31,6 +31,9 @@ async def main() -> None:
     wstunnel_thread = Thread(target=start_wstunnel_server, args=(settings,))
     wstunnel_thread.start()
 
+    with Session(engine) as session:
+        start_wg_server(settings, session)
+
     bot = Bot(
         token=settings.telegram_bot_token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
