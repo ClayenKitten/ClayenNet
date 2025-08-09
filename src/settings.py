@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     ws_password: str = Field()
 
     # Database
-    postgres_host: str = Field()
+    postgres_host: str = Field(default="postgres")
     postgres_db: str = Field()
     postgres_user: str = Field()
     postgres_password: str = Field()
