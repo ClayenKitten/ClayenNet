@@ -54,3 +54,5 @@ wstunnel client -L udp://0.0.0.0:${PUBLIC_PORT}$:localhost:9000 -P ${WS_PASSWORD
 | POSTGRES_DB             | Postgres database                                                                               |    -    |
 | POSTGRES_USER           | Postgres user                                                                                   |    -    |
 | POSTGRES_PASSWORD       | Postgres password                                                                               |    -    |
+| **Other**               |                                                                                                 |         |
+| DISABLE_MASQUERADE      | Set `True` to disable outbound nat. Useful if server is behind router.                          |  False  |
