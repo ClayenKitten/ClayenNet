@@ -9,27 +9,24 @@ from aiogram.enums import ParseMode
 from aiogram.types import (
     BotCommand,
 )
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from middleware import MyMiddleware
 from routers import router as main_router
 from routers.admin import router as admin_router
 from routers.device import router as device_router
 from settings import Settings
+from wg_server import start_wg_server
 from wstunnel import start_wstunnel_server
 
 
-dp = Dispatcher()
-for event_observer in [dp.message, dp.callback_query]:
-    event_observer.middleware(MyMiddleware())
-dp.include_routers(
-    admin_router,
-    device_router,
-    main_router,
-)
-
-
 async def main() -> None:
+    # Workaround for typechecker, see https://github.com/pydantic/pydantic/issues/3753.
     settings = Settings.model_validate({})
+    engine = create_engine(
+        f"postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}/{settings.postgres_db}"
+    )
 
     wstunnel_thread = Thread(target=start_wstunnel_server, args=(settings,))
     wstunnel_thread.start()
@@ -46,6 +43,15 @@ async def main() -> None:
             BotCommand(command="help", description="Помощь"),
         ]
     )
+    dp = Dispatcher(settings=settings, engine=engine)
+    for event_observer in [dp.message, dp.callback_query]:
+        event_observer.middleware(MyMiddleware())
+    dp.include_routers(
+        admin_router,
+        device_router,
+        main_router,
+    )
+
     await dp.start_polling(bot)
 
 
