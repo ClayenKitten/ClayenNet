@@ -47,14 +47,13 @@ async def main() -> None:
         ]
     )
     dp = Dispatcher(settings=settings, engine=engine)
-    for event_observer in [dp.message, dp.callback_query]:
-        event_observer.middleware(MyMiddleware())
+    dp.message.middleware(MyMiddleware())
+    dp.callback_query.middleware(MyMiddleware())
     dp.include_routers(
         admin_router,
         device_router,
         main_router,
     )
-
     await dp.start_polling(bot)
 
 

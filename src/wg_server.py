@@ -10,7 +10,10 @@ INTERNAL_PORT = 9000
 
 
 def start_wg_server(settings: Settings, session: Session):
+    # Cleanup
+    apply_iptables(enable=False)
     subprocess.run(["ip", "link", "del", "wg0"])
+
     subprocess.run(["ip", "link", "add", "wg0", "type", "wireguard"], check=True)
     subprocess.run(
         ["ip", "addr", "add", settings.wg_address, "dev", "wg0"],
@@ -41,3 +44,23 @@ def start_wg_server(settings: Settings, session: Session):
             ["ip", "route", "add", device.address, "dev", "wg0"],
             check=True,
         )
+    apply_iptables(enable=True)
+
+
+def apply_iptables(enable: bool = True):
+    flag = "-A" if enable else "-D"
+
+    # Disable communication between clients
+    subprocess.run(
+        ["iptables", flag, "FORWARD", "-i", "wg0", "-o", "wg0", "-j", "DROP"],
+        check=True,
+    )
+    subprocess.run(
+        ["iptables", flag, "FORWARD", "-i", "wg0", "-j", "ACCEPT"],
+        check=True,
+    )
+    # Enable masquerading (source NAT) to allow communication with public networks
+    subprocess.run(
+        ["iptables", "-t", "nat", flag, "POSTROUTING", "-o" "eth0", "-j", "MASQUERADE"],
+        check=True,
+    )

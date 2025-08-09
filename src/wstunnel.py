@@ -4,6 +4,12 @@ from wg_server import INTERNAL_PORT
 
 
 def start_wstunnel_server(settings: Settings):
+    """
+    Start a wstunnel server.
+
+    Note: it is a blocking operation that should be called in a separate thread.
+    """
+
     subprocess.run(
         [
             "wstunnel",
