@@ -24,5 +24,9 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock /app/
 RUN poetry install --no-root
 
+COPY ./alembic.ini /app/alembic.ini
+COPY ./alembic /app/alembic
+COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./src /app/src
-CMD ["/app/.venv/bin/python", "/app/src/main.py"]
+
+ENTRYPOINT ["/app/entrypoint.sh"]
