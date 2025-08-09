@@ -9,8 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 RUN pip install "poetry==${POETRY_VERSION}"
 
-# WireGuard
-RUN apt-get update && apt-get install -y wireguard iproute2 curl
+# WireGuard and network management tools
+RUN apt-get update && apt-get install -y wireguard iproute2 iptables curl
 
 # wstunnel
 RUN curl -L https://github.com/erebe/wstunnel/releases/download/v10.4.3/wstunnel_10.4.3_linux_amd64.tar.gz -o wstunnel.tar.gz && \

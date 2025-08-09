@@ -53,14 +53,14 @@ def apply_iptables(enable: bool = True):
     # Disable communication between clients
     subprocess.run(
         ["iptables", flag, "FORWARD", "-i", "wg0", "-o", "wg0", "-j", "DROP"],
-        check=True,
+        check=enable,
     )
     subprocess.run(
         ["iptables", flag, "FORWARD", "-i", "wg0", "-j", "ACCEPT"],
-        check=True,
+        check=enable,
     )
     # Enable masquerading (source NAT) to allow communication with public networks
     subprocess.run(
         ["iptables", "-t", "nat", flag, "POSTROUTING", "-o" "eth0", "-j", "MASQUERADE"],
-        check=True,
+        check=enable,
     )
