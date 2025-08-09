@@ -2,10 +2,14 @@ import re
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from schema import Device, User
+from settings import Settings
 from wg_keys import create_wg_private_key, create_wg_public_key
+from wg_server import start_wg_server
 
 
-async def add_device(session: Session, user: User, name: str) -> Device:
+async def add_device(
+    *, settings: Settings, session: Session, user: User, name: str
+) -> Device:
     if len(name) < 2 or len(name) > 16:
         raise InvalidDeviceName("Имя устройства должно иметь длину от 2 до 16 символов")
     if not re.match("^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9 _-]+$", name):
@@ -36,6 +40,8 @@ async def add_device(session: Session, user: User, name: str) -> Device:
     )
     session.add(new_device)
     session.commit()
+
+    start_wg_server(settings, session)
 
     return new_device
 

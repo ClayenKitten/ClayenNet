@@ -52,7 +52,6 @@ async def admin(
 @router.callback_query(F.data == "admin:refresh")
 async def admin_refresh(
     callback: CallbackQuery,
-    bot: Bot,
     *,
     user: User,
     settings: Settings,

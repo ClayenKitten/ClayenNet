@@ -149,7 +149,9 @@ async def device_new_2(
 
     # Create device
     try:
-        device = await add_device(session, user, message.text)
+        device = await add_device(
+            settings=settings, session=session, user=user, name=message.text
+        )
     except UserNetworkExhausted as err:
         await message.answer(err.message, reply_markup=ReplyKeyboardRemove())
         await state.clear()
