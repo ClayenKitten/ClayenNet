@@ -1,0 +1,19 @@
+[project]
+name = "clayennet"
+version = "1.0.0"
+requires-python = ">= 3.10,<4"
+dependencies = [
+  "pydantic==2.11.7",
+  "pydantic-settings==2.10.1",
+  "sqlalchemy (>=2.0.41,<3.0.0)",
+  "aiogram (>=3.21.0,<4.0.0)",
+  "psycopg2-binary (>=2.9.10,<3.0.0)",
+  "cryptography (>=45.0.6,<46.0.0)",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+alembic = "^1.16.4"
