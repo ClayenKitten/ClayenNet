@@ -164,9 +164,11 @@ async def device_new_2(
     await bot.send_document(
         chat_id=user.tg_user_id,
         document=BufferedInputFile(
-            file=wg_config.encode("utf-8"), filename=f"{device.name}.conf"
+            file=wg_config.encode("utf-8"), filename=f"ClayenNet.conf"
         ),
-        caption=f"🏘 IP адрес: <code>{device.address}</code>",
+        caption="\n".join(
+            [f"<b>{device.name}</b>", f"🏘 IP адрес: <code>{device.address}</code>"]
+        ),
         reply_markup=ReplyKeyboardRemove(),
     )
     await state.clear()
@@ -197,8 +199,10 @@ async def device(
     await bot.send_document(
         chat_id=user.tg_user_id,
         document=BufferedInputFile(
-            file=wg_config.encode("utf-8"), filename=f"{device.name}.conf"
+            file=wg_config.encode("utf-8"), filename=f"ClayenNet.conf"
         ),
-        caption=f"🏘 IP адрес: <code>{device.address}</code>",
+        caption="\n".join(
+            [f"<b>{device.name}</b>", f"🏘 IP адрес: <code>{device.address}</code>"]
+        ),
         reply_markup=ReplyKeyboardRemove(),
     )

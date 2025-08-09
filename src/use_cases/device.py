@@ -10,12 +10,9 @@ from wg_server import start_wg_server
 async def add_device(
     *, settings: Settings, session: Session, user: User, name: str
 ) -> Device:
-    if len(name) < 2 or len(name) > 16:
-        raise InvalidDeviceName("Имя устройства должно иметь длину от 2 до 16 символов")
-    if not re.match("^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9 _-]+$", name):
-        raise InvalidDeviceName(
-            'Имя устройства должно начинаться с буквы и содержать только буквы, цифры, символы "_" и "-"'
-        )
+    name = name.strip()
+    if len(name) < 2 or len(name) > 32:
+        raise InvalidDeviceName("Имя устройства должно иметь длину от 2 до 32 символов")
 
     devices = (
         session.execute(select(Device).where(Device.owner_id == user.id))
